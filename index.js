@@ -25,14 +25,28 @@ app.post('/login' , (req,res)=>{
 })
 
 app.post("/profile" , verifyToken, (req,res)=>{
-
+    jwt.verify(req.token , secretKey , (err , authData)=>{
+        if(err){
+            res.send("invalid token")
+        }else{
+            res.json({
+                message : "profile accessed",
+                authData
+            })
+        }
+    })
 })
 
 
 function verifyToken(req,res,next){
-    const bearerHeader = req.headers['Authorization']
+    const bearerHeader = req.headers['authorization']
+    console.log(bearerHeader);
     if( typeof bearerHeader !== 'undefined'){
-
+        const bearer = bearerHeader.split(" ")
+        const token = bearer[1]
+        req.token = token
+        next()
+        
     }else{
         res.send({
             result : "this is not valid"
